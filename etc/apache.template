@@ -1,0 +1,49 @@
+# Configuration for namesty's sandbox
+LoadModule apreq_module /usr/lib/apache2/modules/mod_apreq2.so
+LoadModule perl_module /usr/lib/apache2/modules/mod_perl.so
+ServerRoot __SERVER_ROOT__
+PidFile __PID_FILE__
+Listen __PORT__
+
+Timeout 50
+KeepAlive Off
+MinSpareServers 5
+MaxSpareServers 10
+StartServers 5
+MaxClients 10
+MaxRequestsPerChild 1000
+
+User __USER__
+Group __GROUP__
+
+<Directory />
+    AllowOverride None
+</Directory>
+
+UseCanonicalName Off
+HostnameLookups Off
+
+PerlPassEnv HOME 
+PerlPassEnv PERL5LIB
+PerlPassEnv PERLLIB 
+PerlPassEnv LOGTOP
+PerlPassEnv SRCTOP
+PerlPassEnv PROJECT
+PerlPassEnv PORT
+
+<Location />
+    SetHandler perl-script
+    PerlHandler N3::Handler
+    PerlSendHeader on
+    ErrorDocument 404 /notfound
+    ErrorDocument 500 /error
+</Location>
+
+LogLevel warn
+LogFormat "%h %l %u %t \"%r\" %s %b %{extra_logging}n" N3
+CustomLog "|/usr/bin/cronolog -S __LOGTOP__/__PROJECT__/access_log __LOGTOP__/__PROJECT__/access.__USER__-__PROJECT__.%Y%m%d" N3
+ErrorLog "|/usr/bin/cronolog -S __LOGTOP__/__PROJECT__/error_log __LOGTOP__/__PROJECT__/error.__USER__-__PROJECT__.%Y%m%d"
+DocumentRoot __SRCTOP__/__PROJECT__/htdocs
+
+PerlRequire __SRCTOP__/N3/N3/Handler.pm
+PerlCleanupHandler N3::Handler::cleanup

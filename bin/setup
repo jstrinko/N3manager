@@ -1,0 +1,147 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Path;
+use N3::Replace;
+use N3::Util;
+
+my $apache_bin_default = `which apache2`;
+chomp $apache_bin_default;
+
+my $parts = {
+    src_directory => {
+	prompt => 'Source code directory:',
+	default => $ENV{SRCTOP} || $ENV{HOME} . '/src',
+	validate => \&validate_file_exists,
+    },
+    project_file_directory => {
+	prompt => 'Project file directory - will create if it doesn\'t exist:',
+	default => $ENV{HOME} . '/projects',
+    },
+    apache_directory => {
+	prompt => 'Apache config and pid directory - will create if it doesn\'t exist:',
+	default => $ENV{HOME} . '/apache',
+    },
+    apache_bin => {
+	prompt => 'Apache binary:',
+	default => $apache_bin_default,
+	validate => \&validate_file_exists
+    },
+    log_directory => {
+	prompt => 'Log directory:',
+	default => $ENV{LOGTOP} || $ENV{HOME} . '/logs',
+    },
+    port => {
+	prompt => 'Port:',
+	validate => \&validate_port,
+    },
+};
+
+my $project = {
+    name => 'N3manager',
+};
+
+foreach my $key (keys %{$parts}) {
+    while (!$project->{$key}) {
+	my $default = $parts->{$key}->{default} ? "[$parts->{$key}->{default}] " : "";
+	print "$parts->{$key}->{prompt} $default";
+	my $val = <>;
+	chomp $val;
+	$val ||= $parts->{$key}->{default};
+	if ($val) {
+	    my $validate = $parts->{$key}->{validate};
+	    if ($validate) {
+		if (&{$validate}($val)) {
+		    $project->{$key} = $val;
+		}
+	    }
+	    else {
+		$project->{$key} = $val;
+	    }
+	}
+    }
+}
+
+my $project_dir = $project->{src_directory} . "/" . $project->{name};
+my $first_letter_cap_name = ucfirst($project->{name});
+my @dirs = (
+    $project_dir . '/bin',
+    $project_dir . '/htdocs',
+    $project_dir . '/' . $first_letter_cap_name, 
+    $ENV{HOME} . '/bin', 
+    $project->{project_file_directory}, 
+    $project->{apache_directory} . '/pids',
+    $project->{log_directory} . '/' . $project->{name},
+);
+
+foreach my $dir (@dirs) {
+    print "Creating directory: $dir\n";
+    mkpath $dir;
+}
+
+my $project_file = $project->{project_file_directory} . 
+    "/N3." . $ENV{USER} . '-' . $project->{name} . '.env';
+
+my $apache_conf_file = $project->{apache_directory} . 
+    "/N3." . $ENV{USER} . '-' . $project->{name} . '.conf';
+
+my $pid_file = $project->{apache_directory} . '/pids' .
+    "/N3." . $ENV{USER} . '-' . $project->{name} . '.pid';
+
+my $server_start_script = "$ENV{HOME}/bin/start-$project->{name}";
+
+print "Creating apache config $apache_conf_file\n";
+my $contents = N3::Util::file_contents("$project_dir/etc/apache.template");
+my $needed_words = N3::Replace::find_replaceable_words($contents);
+my $replacements = {
+    LOGTOP => $project->{log_directory},
+    PROJECT => $project->{name},
+    USER => $ENV{USER},
+    SRCTOP => $project->{src_directory},
+    GROUP => $ENV{USER},
+    SERVER_ROOT => $project->{apache_directory},
+    PID_FILE => $pid_file,
+    PORT => $project->{port},
+};
+my $new_content = N3::Replace::replace_words($contents, $replacements);
+open(FILE, ">$apache_conf_file") or die $!;
+print FILE $new_content;
+close FILE;
+
+print "Creating project file: $project_file\n";
+open(FILE, ">$project_file") or die $!;
+print FILE <<END;
+export ENVIRONMENT=dev
+export HOME=$ENV{HOME}
+export PERL5LIB=$project_dir:$project->{src_directory}/N3:\$PERL5LIB
+export PERLLIB=\$PERL5LIB
+export PATH=$project_dir/bin:$project->{src_directory}/N3/bin:$ENV{HOME}/bin:\$PATH
+export LOGTOP=$project->{log_directory}
+export SRCTOP=$project->{src_directory}
+export PROJECT=$project->{name}
+END
+close FILE;
+
+print "Creating start script: $server_start_script\n";
+open(FILE, ">$server_start_script") or die $!;
+print FILE <<END;
+#!/bin/bash
+
+. $project_file;
+kill `cat $pid_file`;
+sleep 2;
+$project->{apache_bin} -f $apache_conf_file
+END
+close FILE;
+
+sub validate_file_exists {
+    my $file = shift;
+    return 0 unless -e $file;
+    return 1;
+}
+
+sub validate_port {
+    my $port = shift;
+    return 0 unless $port > 2000 && $port =~ m{^\d+$};
+    return 1;
+}
