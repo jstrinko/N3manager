@@ -1,0 +1,18 @@
+[
+    { "uri": "/", "local": "/index" },
+    { "uri": "/head", "local": "/head" },
+    { "uri": "/foot", "local": "/foot" },
+    { 
+	"uri": "/scripts", 
+	"type": "collection", 
+	"subtype": "javascript",
+	"collection": [
+	    "/scripts/jquery-1.7.2.min.js",
+	    "/scripts/json2.js",
+	    "/scripts/underscore-min.js",
+	    "/scripts/backbone-min.js",
+	    "/scripts/controller.js",
+	    "/templates/*.jst"
+	]
+    }
+]
