@@ -30,6 +30,7 @@ PerlPassEnv LOGTOP
 PerlPassEnv SRCTOP
 PerlPassEnv PROJECT
 PerlPassEnv PORT
+PerlPassEnv STATIC_SERVER
 
 <Location />
     SetHandler perl-script

@@ -1,0 +1,19 @@
+ServerRoot __SERVER_ROOT__
+PidFile __PID_FILE__
+Listen __PORT__
+DocumentRoot __DOCUMENT_ROOT__
+
+Timeout 50
+KeepAlive Off
+MinSpareServers 5
+MaxSpareServers 10
+StartServers 5
+MaxClients 100
+MaxRequestsPerChild 1000
+User __USER__
+Group __GROUP__
+
+LogLevel warn
+CustomLog "|/usr/bin/cronolog -S __LOGTOP__/__PROJECT__/access_log __LOGTOP__/__PROJECT__/access.__USER__-__PROJECT__.%Y%m%d" N3
+ErrorLog "|/usr/bin/cronolog -S __LOGTOP__/__PROJECT__/error_log __LOGTOP__/__PROJECT__/error.__USER__-__PROJECT__.%Y%m%d"
+

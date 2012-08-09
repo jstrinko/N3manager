@@ -8,48 +8,87 @@ use N3::Util;
 my $apache_bin_default = `which apache2`;
 chomp $apache_bin_default;
 
-my $parts = {
-    src_directory => {
+my $default_hostname = `hostname`;
+chomp $default_hostname;
+unless ($default_hostname =~ m{^.*\w\.\w$}si) {
+    my $ips = `ifconfig`;
+    my @ip_data = split(/\n\n/, $ips);
+    $default_hostname = "127.0.0.1";
+    foreach my $data (@ip_data) {
+	next if $data =~ m{^lo}si;
+	if ($data =~ m{inet addr:(\d+\.\d+\.\d+\.\d+)\s}si) {
+	    $default_hostname = $1;
+	    last;
+	}
+    }
+}
+
+my @parts = (
+    { 
+	key => 'src_directory',
 	prompt => 'Source code directory:',
 	default => $ENV{SRCTOP} || $ENV{HOME} . '/src',
 	validate => \&validate_file_exists,
     },
-    project_file_directory => {
+    {
+	key => 'project_file_directory',
 	prompt => 'Project file directory - will create if it doesn\'t exist:',
 	default => $ENV{HOME} . '/projects',
     },
-    apache_directory => {
+    {
+	key => 'apache_directory',
 	prompt => 'Apache config and pid directory - will create if it doesn\'t exist:',
 	default => $ENV{HOME} . '/apache',
     },
-    apache_bin => {
+    {
+	key => 'apache_bin',
 	prompt => 'Apache binary:',
 	default => $apache_bin_default,
 	validate => \&validate_file_exists
     },
-    log_directory => {
+    {
+	key => 'log_directory',
 	prompt => 'Log directory:',
 	default => $ENV{LOGTOP} || $ENV{HOME} . '/logs',
     },
-    port => {
-	prompt => 'Port:',
+    {
+	key => 'port',
+	prompt => 'N3 management server Port:',
 	validate => \&validate_port,
+	default => 5000,
     },
-};
+    {
+	key => 'static_server_port',
+	prompt => 'Static server port:',
+	validate => \&validate_port,
+	default => 5001,
+    },
+    {
+	key => 'static_server_path',
+	prompt => 'Static server path:',
+	default => ($ENV{SRCTOP} || $ENV{HOME} . '/src') . '/static',
+    },
+    {
+	key => 'static_server_hostname',
+	prompt => 'Static server hostname:',
+	default => $default_hostname,
+    }
+);
 
 my $project = {
     name => 'N3manager',
 };
 
-foreach my $key (keys %{$parts}) {
+foreach my $part (@parts) {
+    my $key = $part->{key};
     while (!$project->{$key}) {
-	my $default = $parts->{$key}->{default} ? "[$parts->{$key}->{default}] " : "";
-	print "$parts->{$key}->{prompt} $default";
+	my $default = $part->{default} ? "[$part->{default}] " : "";
+	print "$part->{prompt} $default";
 	my $val = <>;
 	chomp $val;
-	$val ||= $parts->{$key}->{default};
+	$val ||= $part->{default};
 	if ($val) {
-	    my $validate = $parts->{$key}->{validate};
+	    my $validate = $part->{validate};
 	    if ($validate) {
 		if (&{$validate}($val)) {
 		    $project->{$key} = $val;
@@ -64,14 +103,14 @@ foreach my $key (keys %{$parts}) {
 
 my $project_dir = $project->{src_directory} . "/" . $project->{name};
 my $first_letter_cap_name = ucfirst($project->{name});
+my $static_root = $project->{static_server_path} . '/htdocs';
 my @dirs = (
-    $project_dir . '/bin',
-    $project_dir . '/htdocs',
-    $project_dir . '/' . $first_letter_cap_name, 
     $ENV{HOME} . '/bin', 
     $project->{project_file_directory}, 
     $project->{apache_directory} . '/pids',
     $project->{log_directory} . '/' . $project->{name},
+    $project->{log_directory} . '/static',
+    $static_root,
 );
 
 foreach my $dir (@dirs) {
@@ -88,11 +127,17 @@ my $apache_conf_file = $project->{apache_directory} .
 my $pid_file = $project->{apache_directory} . '/pids' .
     "/N3." . $ENV{USER} . '-' . $project->{name} . '.pid';
 
-my $server_start_script = "$ENV{HOME}/bin/start-$project->{name}";
+my $static_conf_file = $project->{apache_directory} .
+    "/static." . $ENV{USER} . '.conf';
 
-print "Creating apache config $apache_conf_file\n";
-my $contents = N3::Util::file_contents("$project_dir/etc/apache.template");
-my $needed_words = N3::Replace::find_replaceable_words($contents);
+my $static_pid_file = $project->{apache_directory} . '/pids' .
+    "/static." . $ENV{USER} . '.pid';
+
+my $server_start_script = "$ENV{HOME}/bin/start-$project->{name}";
+my $static_start_script = "$ENV{HOME}/bin/start-static";
+
+print "Creating N3 apache config $apache_conf_file\n";
+my $contents = N3::Util::file_contents("$project_dir/etc/N3.template");
 my $replacements = {
     LOGTOP => $project->{log_directory},
     PROJECT => $project->{name},
@@ -108,6 +153,26 @@ open(FILE, ">$apache_conf_file") or die $!;
 print FILE $new_content;
 close FILE;
 
+print "Creating static apache config $static_conf_file\n";
+my $static_contents = N3::Util::file_contents("$project_dir/etc/static.template");
+my $static_replacements = {
+    SERVER_ROOT => $project->{apache_directory},
+    PID_FILE => $static_pid_file,
+    PORT => $project->{static_server_port},
+    LOGTOP => $project->{log_directory},
+    DOCUMENT_ROOT => $static_root,
+    USER => $ENV{USER},
+    GROUP => $ENV{USER},
+    PROJECT => 'static',
+};
+
+symlink $project_dir . '/static', $static_root . '/' . $project->{name};
+
+my $static_new_content = N3::Replace::replace_words($static_contents, $static_replacements);
+open(FILE, ">$static_conf_file") or die $!;
+print FILE $static_new_content;
+close FILE;
+
 print "Creating project file: $project_file\n";
 open(FILE, ">$project_file") or die $!;
 print FILE <<END;
@@ -119,10 +184,11 @@ export PATH=$project_dir/bin:$project->{src_directory}/N3/bin:$ENV{HOME}/bin:\$P
 export LOGTOP=$project->{log_directory}
 export SRCTOP=$project->{src_directory}
 export PROJECT=$project->{name}
+export STATIC_SERVER=http://$project->{static_server_hostname}:$project->{static_server_port}
 END
 close FILE;
 
-print "Creating start script: $server_start_script\n";
+print "Creating N3 manager start script: $server_start_script\n";
 open(FILE, ">$server_start_script") or die $!;
 print FILE <<END;
 #!/bin/bash
@@ -133,6 +199,30 @@ sleep 2;
 $project->{apache_bin} -f $apache_conf_file
 END
 close FILE;
+
+print "Creating static start script: $static_start_script\n";
+open(FILE, ">$static_start_script") or die $!;
+print FILE <<END;
+#!/bin/bash
+
+kill `cat $static_pid_file`;
+sleep 2;
+$project->{apache_bin} -f $static_conf_file
+END
+close FILE;
+
+chmod 0755, $static_start_script, $server_start_script;
+
+system $static_start_script;
+system $server_start_script;
+
+print "You will be able to access the N3 management server at http://$default_hostname:" . $project->{port} . "\n";
+
+sub validate_y_n {
+    my $yn = shift;
+    return 1 if $yn eq 'y' or $yn eq 'n';
+    return 0;
+}
 
 sub validate_file_exists {
     my $file = shift;

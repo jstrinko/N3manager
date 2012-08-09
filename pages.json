@@ -12,7 +12,8 @@
 	    "/scripts/underscore-min.js",
 	    "/scripts/backbone-min.js",
 	    "/scripts/controller.js",
-	    "/templates/*.jst"
+	    "/scripts/views/*.js",
+	    "/scripts/templates/*.jst"
 	]
     }
 ]
