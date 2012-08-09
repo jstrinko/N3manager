@@ -185,6 +185,11 @@ export LOGTOP=$project->{log_directory}
 export SRCTOP=$project->{src_directory}
 export PROJECT=$project->{name}
 export STATIC_SERVER=http://$project->{static_server_hostname}:$project->{static_server_port}
+export ENVIRONMENT_TYPE=dev
+export PROJECTS_DIR=$project->{project_file_directory}
+export APACHE_CONF_DIR=$project->{apache_directory}
+export APACHE_BIN=$project->{apache_bin}
+export START_DIR=$ENV{HOME}/bin
 END
 close FILE;
 

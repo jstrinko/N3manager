@@ -9,38 +9,52 @@ function main() {
 var AppRouter = Backbone.Router.extend({
     routes: {
 	"": "main",
-	"projects": "projects",
-	"status": "app_status",
+	"projects": "showProjects",
+	"status": "appStatus",
 	"about": "about"
     },
     main: function() {
-	if (!App.introView) {
-	    App.introView = new IntroView();
+	if (!this.introView) {
+	    this.introView = new IntroView();
 	}
-	App.introView.render();
+	this.introView.render();
     },
-    projects: function() {
-
+    showProjects: function() {
+	if (!this.projects) {
+	    $.getJSON('/projects', function(data) {
+		this.projects.add(data.projects);
+		this.renderProjects();
+	    });
+	}
+	else {
+	    this.renderProjects();
+	}
     },
-    app_status: function() {
+    appStatus: function() {
 
     },
     about: function() {
-	if (!App.aboutView) {
-	    App.aboutView = new AboutView();
+	if (!this.aboutView) {
+	    this.aboutView = new AboutView();
 	}
-	App.aboutView.render();
+	this.aboutView.render();
     },
     renderHeader: function() {
-	if (!App.headerView) {
-	    App.headerView = new HeaderView();
+	if (!this.headerView) {
+	    this.headerView = new HeaderView();
 	}
-	App.headerView.render();
+	this.headerView.render();
     },
     renderFooter: function() {
-	if (!App.footerView) {
-	    App.footerView = new FooterView();
+	if (!this.footerView) {
+	    this.footerView = new FooterView();
 	}
-	App.footerView.render();
+	this.footerView.render();
+    },
+    renderProjects: function() {
+	if (!this.projectsView) {
+	    this.projectsView = new ProjectsView();
+	}
+	this.projectsView.render({ projects: this.projects });
     }
 });

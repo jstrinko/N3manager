@@ -31,6 +31,11 @@ PerlPassEnv SRCTOP
 PerlPassEnv PROJECT
 PerlPassEnv PORT
 PerlPassEnv STATIC_SERVER
+PerlPassEnv ENVIRONMENT_TYPE
+PerlPassEnv PROJECTS_DIR
+PerlPassEnv APACHE_CONF_DIR
+PerlPassEnv APACHE_BIN
+PerlPassEnv START_DIR
 
 <Location />
     SetHandler perl-script
