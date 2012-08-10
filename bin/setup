@@ -176,7 +176,6 @@ close FILE;
 print "Creating project file: $project_file\n";
 open(FILE, ">$project_file") or die $!;
 print FILE <<END;
-export ENVIRONMENT=dev
 export HOME=$ENV{HOME}
 export PERL5LIB=$project_dir:$project->{src_directory}/N3:\$PERL5LIB
 export PERLLIB=\$PERL5LIB

@@ -21,9 +21,11 @@ var AppRouter = Backbone.Router.extend({
     },
     showProjects: function() {
 	if (!this.projects) {
+	    var app = this;
 	    $.getJSON('/projects', function(data) {
-		this.projects.add(data.projects);
-		this.renderProjects();
+		app.projects = new Projects();
+		app.projects.add(data.projects);
+		app.renderProjects();
 	    });
 	}
 	else {

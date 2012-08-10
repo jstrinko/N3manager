@@ -1,1 +1,4 @@
-
+<h2>Projects</h2>
+<projects>
+<% _.each(projects.model, function(project) { %><%= JST['htdocs/scripts/templates/project'](project) %><% }); %>
+</projects>

@@ -1,7 +1,7 @@
-use base 'N3manager::Projects'
+use base 'N3manager::Projects';
 
 sub init {
     my $self = shift;
     my $projects = N3manager::Projects->new;
-    return $projects->hash;
+    N3->request->data($projects->hash);
 }
