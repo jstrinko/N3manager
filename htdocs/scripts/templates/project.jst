@@ -2,7 +2,13 @@
     <div class=row>
 	<name><%= project.get('name') %></name>
 	<actions>
-	    <a href='#view_source/<%= project.get('environment').SRCTOP.replace('/','\') %>/<%= project.get('name') %>'>View Source</a>
+	    <ul><!-- 
+		--><li><a href='#projects/view_source/<%= project.get('name') %>/<%= project.get('environment').SRCTOP.replace(/\//g, "|") %>|<%= project.get('name') %>'>View Source</a></li><!--
+		--><li><a href='#projects/environment/<%= project.get('name') %>'>Modify Environment</a></li><!--
+		--><li><a href='#projects/file/<%= project.get('name') %>/<%= project.get('apache_conf_file').replace(/\//g, "|") %>'>Edit Apache Conf</a></li><!--
+		--><li><a href='#projects/restart_apache/<%= project.get('name') %>'>(Re)start Apache</a></li><!--
+	    --></ul>
 	</actions>
+	<workarea id='workarea_<%= project.get('name') %>'></workarea>
     </div>
 </project>

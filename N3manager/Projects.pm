@@ -87,6 +87,7 @@ sub init {
     my ($user, $name) = split(/-/, $uid_project);
     return unless $ext eq 'env';
     return unless $file && -e $file;
+    $type =~ s{.*\/}{}g;
     $self->user($user);
     $self->name($name);
     $self->type($type);

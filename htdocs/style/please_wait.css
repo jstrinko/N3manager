@@ -1,0 +1,9 @@
+pleasewait {
+    display: block;
+    font-size: .9em;
+    color: #888;
+    text-align: center;
+}
+pleasewait img {
+    vertical-align: middle;
+}
