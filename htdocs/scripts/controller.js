@@ -20,17 +20,12 @@ var AppRouter = Backbone.Router.extend({
 	this.introView.render();
     },
     showProjects: function() {
-	if (!this.projects) {
-	    var app = this;
-	    $.getJSON('/projects', function(data) {
-		app.projects = new Projects();
-		app.projects.add(data.projects);
-		app.renderProjects();
-	    });
-	}
-	else {
-	    this.renderProjects();
-	}
+	var app = this;
+	$.getJSON('/projects', function(data) {
+	    app.projects.reset();
+	    app.projects.add(data.projects);
+	    app.renderProjects();
+	});
     },
     appStatus: function() {
 
@@ -58,5 +53,8 @@ var AppRouter = Backbone.Router.extend({
 	    this.projectsView = new ProjectsView();
 	}
 	this.projectsView.render({ projects: this.projects });
+    },
+    initialize: function() {
+	this.projects = new Projects();
     }
 });

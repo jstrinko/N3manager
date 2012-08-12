@@ -14,17 +14,16 @@ sub new {
 sub populate_projects {
     my $self = shift;
     my @files = glob $ENV{PROJECTS_DIR} . "/*.env";
-    my $projects = {};
+    my @projects = ();
     foreach my $file (@files) {
-	warn "DOING $file";
 	my $project = N3manager::Project->new(
 	    {
 		project_file => $file
 	    }
 	);
-	$projects->{$project->name} = $project;
+	push @projects, $project;
     }
-    $self->{projects} = $projects;
+    $self->{projects} = \@projects;
 }
 
 package N3manager::Project;

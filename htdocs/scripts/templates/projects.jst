@@ -1,4 +1,7 @@
 <h2>Projects</h2>
 <projects>
-<% _.each(projects.model, function(project) { %><%= JST['htdocs/scripts/templates/project'](project) %><% }); %>
+<% _.each(projects, function(project) { %>
+    <%= JST['htdocs/scripts/templates/project']({ project: project }) %>
+<% }); %>
 </projects>
+<a class='action' href='#new_project'>New Project</a>

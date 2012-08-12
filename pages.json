@@ -10,8 +10,8 @@
 	"collection": [
 	    "/scripts/jquery-1.7.2.min.js",
 	    "/scripts/json2.js",
-	    "/scripts/underscore-min.js",
-	    "/scripts/backbone-min.js",
+	    "/scripts/underscore.js",
+	    "/scripts/backbone.js",
 	    "/scripts/controller.js",
 	    "/scripts/views/*.js",
 	    "/scripts/collections/models/*.js",
