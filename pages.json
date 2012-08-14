@@ -2,7 +2,8 @@
     { "uri": "/", "local": "/index" },
     { "uri": "/head", "local": "/head" },
     { "uri": "/foot", "local": "/foot" },
-    { "uri": "/projects", "local": "/projects", "content_type": "use_request" },
+    { "uri": "/projects", "local": "/projects" },
+    { "uri": "/file", "local": "/file" },
     { 
 	"uri": "/scripts", 
 	"type": "collection", 

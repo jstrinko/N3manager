@@ -1,0 +1,6 @@
+scrollable {
+    display: block;
+    max-height: 300px;
+    overflow: auto;
+    border: 1px solid #999;
+}

@@ -6,6 +6,7 @@ footer {
     text-align: center;
     border-top: 1px solid #009;
     background-color: #eaeaef;
+    clear: both;
 }
 footer copyright {
     position: absolute;

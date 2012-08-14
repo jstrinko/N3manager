@@ -13,7 +13,6 @@ var AppRouter = Backbone.Router.extend({
 	"projects/:command/:project": "showProjects",
 	"projects/:command": "showProjects",
 	"projects": "showProjects",
-	"status": "appStatus",
 	"about": "about"
     },
     main: function() {
@@ -29,9 +28,6 @@ var AppRouter = Backbone.Router.extend({
 	    app.projects.add(data.projects);
 	    app.renderProjects(command, project, vars);
 	});
-    },
-    appStatus: function() {
-
     },
     about: function() {
 	if (!this.aboutView) {
@@ -56,25 +52,6 @@ var AppRouter = Backbone.Router.extend({
 	    this.projectsView = new ProjectsView();
 	}
 	this.projectsView.render({ projects: this.projects });
-	if (command) {
-	    if (project) {
-		if (command == 'view_source') {
-		    this.view_source('#workarea_' + project, vars.replace(/\|/, '/'));
-		}
-		else if (command == 'environment') {
-		    this.environment('#workarea_' + project, project);
-		}
-		else if (command == 'file') {
-		    this.file('#workarea_' + project, vars.replace(/\|/, '/'));
-		}
-		else if (command == 'restart_apache') {
-		    this.restart_apache('#workarea_' + project, project)
-		}
-	    }
-	    else {
-		/* none of these yet */
-	    }
-	}
     },
     initialize: function() {
 	this.projects = new Projects();
@@ -82,15 +59,52 @@ var AppRouter = Backbone.Router.extend({
     },
     view_source: function(container, directory) {
 	this.please_wait(container);
+	var app = this;
+	$.getJSON('/directory', { directory: directory }, function(data) {
+	    app.view_source_callback(container, directory, data);
+	});
+    },
+    view_source_callback: function(container, directory, data) {
+/* WRITE ME */	    
     },
     environment: function(container, project) {
-
-    },
-    file: function(container, file) {
 	this.please_wait(container);
 
     },
-    restart_apache: function(container, project) {
+    show_file: function(container, file) {
+	this.please_wait(container);
+	var app = this;
+	$.getJSON('/file', { file: file }, function(data) {
+	    app.show_file_callback(container, file, data);
+	});
+    },
+    show_file_callback: function(container, file, data) {
+	var html = '<section>' + 
+		'<a href="#" onclick="App.edit_file(\'' + container + '\', \'' + file + '\'); return false;">Edit</a>' +
+		'<scrollable><pre>' + 
+		    data.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
+		'</pre></scrollable>' +
+	    '</section>';
+	$(container).html(html);
+    },
+    edit_file: function(container, file) {
+	var content = $(container + ' pre').html();
+	var html = '<section>' +
+		'<ul><li><a href="#" onclick="App.save_file(\'' + container + '\', \'' + file + '\'); return false;">Save</a></li>' +
+		'<li><a href="#" onclick="App.show_file(\'' + container + '\', \'' + file + '\'); return false;">Cancel</a></li>' +
+		'<div><textarea>' + content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') + '</textarea></div>' +
+	    '</section>';
+	$(container).html(html);
+    },
+    save_file: function(container, file) {
+	var content = $(container + ' textarea').val();
+	this.please_wait(container);
+	var app = this;
+	$.getJSON('/file', { file: file, content: content }, function(data) {
+	    app.show_file_callback(container, file, data);
+	});
+    },
+    show_status: function(container, project) {
 	this.please_wait(container);
 
     },
