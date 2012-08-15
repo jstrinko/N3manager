@@ -1,0 +1,18 @@
+<directory>
+    <right><a href="#" onclick="$('<%= container %>').html(''); return false;">Close</a></right>
+    <% for(var x=0; x<data.content.length; x++) { var element = data.content[x]; element.short = element.location.replace(/^.*\//,''); %>
+	<row>
+	    <icon><img src='<%= Static_Server %>/N3manager/icons/22/<%= element.icon %>.png' width=22 height=22></icon>
+	    <% if (element.type == 'directory') { %>
+		<a href='#' onclick="App.view_source('<%= container %>','<%= element.location %>'); return false;"><%= element.name || element.short %></a>
+	    <%  } else if (element.type == 'file') { var sub_container = 'dirfile' + element.location.replace(/\//g,'_').replace(/\./g, ''); %>
+		<% if (element.editable) { %>
+		<a href='#' onclick="App.show_file('#<%= sub_container %>', '<%= element.location %>'); return false;"><%= element.short %></a>
+		<% } else { %>
+		    <%= element.short %>
+		<% } %>
+		<workarea id='<%= sub_container %>'></workarea>
+	    <% } %>
+	</row>
+    <% } %>
+</directory>

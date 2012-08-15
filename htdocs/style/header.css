@@ -29,9 +29,8 @@ header ul {
 }
 header ul li {
     display: inline-block;
-    padding-left: 8px;
-    padding-right: 7px;
 }
-header ul li:nth-child(n+2) {
-    border-left: 1px solid #009;
+header ul li:nth-child(n+2):before {
+    content: '\b7\a0';
+    padding-left: 6px;
 }

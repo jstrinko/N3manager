@@ -1,0 +1,7 @@
+<section>
+    <ul><li><a href="#" onclick="App.edit_file('<%= container %>', '<%= file %>'); return false;">Edit</a></li><li><a href="#" onclick="$('<%= container %>').html(''); return false;">Close</a></li></ul>
+    <scrollable>
+	<pre><%= data.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') %></pre>
+    </scrollable>
+</section>
+

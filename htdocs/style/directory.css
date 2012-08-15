@@ -1,0 +1,11 @@
+directory {
+    display: block;
+    padding-top: 10px;
+    border-top: 1px solid #666;
+}
+directory row icon img {
+    vertical-align: middle;
+}
+directory row {
+    padding-bottom: 5px;
+}

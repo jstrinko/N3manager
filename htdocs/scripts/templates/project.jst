@@ -1,14 +1,12 @@
 <project>
-    <div class=row>
-	<name><%= project.get('name') %></name>
-	<actions>
-	    <ul><!-- 
-		--><li><a href='#' onclick='App.view_source("#workarea_<%= project.get('name') %>","<%= project.get('environment').SRCTOP %>/<%= project.get('name') %>"); return false;'>View Source</a></li><!--
-		--><li><a href='#' onclick='App.environment("#workarea_<%= project.get('name') %>","<%= project.get('name') %>"); return false;'>Modify Environment</a></li><!--
-		--><li><a href='#' onclick='App.show_file("#workarea_<%= project.get('name') %>", "<%= project.get('apache_conf_file') %>"); return false;'>View Apache Conf</a></li><!--
-		--><li><a href='#' onclick='App.show_status("#workarea_<%= project.get('name') %>", "<%= project.get('name') %>"); return false;'>Status</a></li><!--
-	    --></ul>
-	</actions>
-	<workarea id='workarea_<%= project.get('name') %>'></workarea>
-    </div>
+    <name><%= project.get('name') %></name>
+    <actions>
+	<ul><!-- 
+	    --><li><a href='#' onclick='App.view_source("#workarea_<%= project.get('name') %>","<%= project.get('environment').SRCTOP %>/<%= project.get('name') %>"); return false;'>View Source</a></li><!--
+	    --><li><a href='#' onclick='App.show_file("#workarea_<%= project.get('name') %>","<%= project.get('project_file') %>"); return false;'>View Environment</a></li><!--
+	    --><li><a href='#' onclick='App.show_file("#workarea_<%= project.get('name') %>", "<%= project.get('apache_conf_file') %>"); return false;'>View Apache Confg</a></li><!--
+	    --><li><a href='#' onclick='App.show_status("#workarea_<%= project.get('name') %>", "<%= project.get('name') %>"); return false;'>Status</a></li><!--
+	--></ul>
+    </actions>
+    <workarea id='workarea_<%= project.get('name') %>'></workarea>
 </project>

@@ -4,6 +4,8 @@
     { "uri": "/foot", "local": "/foot" },
     { "uri": "/projects", "local": "/projects" },
     { "uri": "/file", "local": "/file" },
+    { "uri": "/directory", "local": "/directory" },
+    { "uri": "/status", "local": "/status" },
     { 
 	"uri": "/scripts", 
 	"type": "collection", 

@@ -8,25 +8,15 @@ function main() {
 
 var AppRouter = Backbone.Router.extend({
     routes: {
-	"": "main",
-	"projects/:command/:project/:vars": "showProjects",
-	"projects/:command/:project": "showProjects",
-	"projects/:command": "showProjects",
-	"projects": "showProjects",
+	"": "showProjects",
 	"about": "about"
     },
-    main: function() {
-	if (!this.introView) {
-	    this.introView = new IntroView();
-	}
-	this.introView.render();
-    },
-    showProjects: function(command, project, vars) {
+    showProjects: function() {
 	var app = this;
 	$.getJSON('/projects', function(data) {
 	    app.projects.reset();
 	    app.projects.add(data.projects);
-	    app.renderProjects(command, project, vars);
+	    app.renderProjects();
 	});
     },
     about: function() {
@@ -47,7 +37,7 @@ var AppRouter = Backbone.Router.extend({
 	}
 	this.footerView.render();
     },
-    renderProjects: function(command, project, vars) {
+    renderProjects: function() {
 	if (!this.projectsView) {
 	    this.projectsView = new ProjectsView();
 	}
@@ -65,7 +55,7 @@ var AppRouter = Backbone.Router.extend({
 	});
     },
     view_source_callback: function(container, directory, data) {
-/* WRITE ME */	    
+	$(container).html(JST['htdocs/scripts/templates/directory']({ container: container, directory: directory, data: data }));
     },
     environment: function(container, project) {
 	this.please_wait(container);
@@ -79,22 +69,18 @@ var AppRouter = Backbone.Router.extend({
 	});
     },
     show_file_callback: function(container, file, data) {
-	var html = '<section>' + 
-		'<a href="#" onclick="App.edit_file(\'' + container + '\', \'' + file + '\'); return false;">Edit</a>' +
-		'<scrollable><pre>' + 
-		    data.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
-		'</pre></scrollable>' +
-	    '</section>';
-	$(container).html(html);
+	$(container).html(JST['htdocs/scripts/templates/show_file']({ container: container, file: file, data: data }));
     },
     edit_file: function(container, file) {
-	var content = $(container + ' pre').html();
-	var html = '<section>' +
-		'<ul><li><a href="#" onclick="App.save_file(\'' + container + '\', \'' + file + '\'); return false;">Save</a></li>' +
-		'<li><a href="#" onclick="App.show_file(\'' + container + '\', \'' + file + '\'); return false;">Cancel</a></li>' +
-		'<div><textarea>' + content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') + '</textarea></div>' +
-	    '</section>';
-	$(container).html(html);
+	this.please_wait(container);
+	var app = this;
+	$.getJSON('/file', { file: file }, function(data) {
+	    app.edit_file_callback(container, file, data);
+	});
+    },
+    edit_file_callback: function(container, file, data) {
+	$(container).html(JST['htdocs/scripts/templates/edit_file']({ container: container, file: file, data: data }));
+	$(container + ' textarea').val(data.content);
     },
     save_file: function(container, file) {
 	var content = $(container + ' textarea').val();
@@ -104,9 +90,15 @@ var AppRouter = Backbone.Router.extend({
 	    app.show_file_callback(container, file, data);
 	});
     },
-    show_status: function(container, project) {
+    show_status: function(container, project) { 
 	this.please_wait(container);
-
+	var app = this;
+	$.getJSON('/status', { project: project }, function(data) {
+	    app.show_status_callback(container, data);
+	});
+    },
+    show_status_callback: function(container, data) {
+	$(container).html(JST['htdocs/scripts/templates/status']({ container: container, data: data }));
     },
     please_wait: function(container) {
 	$(container).html(JST['htdocs/scripts/templates/please_wait']());
