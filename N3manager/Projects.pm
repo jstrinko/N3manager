@@ -23,7 +23,21 @@ sub populate_projects {
 	);
 	push @projects, $project;
     }
-    $self->{projects} = \@projects;
+    $self->projects(\@projects);
+}
+
+sub projects {
+    my $self = shift;
+    $self->{projects} = shift if @_;
+    return wantarray ? @{$self->{projects}} : $self->{projects};
+}
+
+sub project {
+    my $self = shift;
+    my $name = shift;
+    foreach my $project ($self->projects) {
+	return $project if $project->name eq $name;
+    }
 }
 
 package N3manager::Project;

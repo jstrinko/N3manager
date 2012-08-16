@@ -90,10 +90,10 @@ var AppRouter = Backbone.Router.extend({
 	    app.show_file_callback(container, file, data);
 	});
     },
-    show_status: function(container, project) { 
+    show_status: function(container, project, type, user) { 
 	this.please_wait(container);
 	var app = this;
-	$.getJSON('/status', { project: project }, function(data) {
+	$.getJSON('/status', { project: project, type: type, user: user }, function(data) {
 	    app.show_status_callback(container, data);
 	});
     },

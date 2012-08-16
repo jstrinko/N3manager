@@ -1,0 +1,44 @@
+<status>
+    <apache>
+	<h3>Apache</h3>
+	<row>
+	    <label>Status</label>
+	    <content><%= data.apache_status.running ? '<good>Running</good>' : '<bad>Stopped</bad>' %></content>
+	</row>
+	<% if (data.apache_status.running) { %>
+	<row>
+	    <label>Processes</label>
+	    <content>
+		<% var total_rss = 0; %>
+		<% var total_vsz = 0; %>
+		<% var mem_percent = 0; %>
+		<% var cpu_percent = 0; %>
+		<% for(var x in data.apache_status.processes) { %>
+		    <% var process = data.apache_status.processes[x]; %>
+		    <% total_rss += (process.rss * 1); %>
+		    <% total_vsz += (process.vsz * 1); %>
+		    <% mem_percent += (process.mem * 1); %>
+		    <% cpu_percent += (process.cpu * 1); %>
+		    <process>
+			<ul><!--
+			    --><li>Pid: <%= process.pid %></li><!--
+			    --><li>Mem%: <%= process.mem %></li><!--
+			    --><li>CPU%: <%= process.cpu %></li><!--
+			    --><li>rss: <%= process.rss %></li><!--
+			    --><li>vsz: <%= process.vsz %></li><!--
+			--></ul>
+		    </process>
+		<% } %>
+		<ul><!--
+		    --><li>Total rss: <%= total_rss %></li><!--
+		    --><li>Total vsz: <%= total_vsz %></li><!--
+		    --><li>Total mem: <%= mem_percent %>%</li><!--
+		    --><li>Total cpu: <%= cpu_percent %>%</li<!--
+		--></ul>
+	    </content>
+	</row>
+	<% } %>
+    </apache>
+    <git>
+    </git>
+</status>
