@@ -101,12 +101,26 @@ var AppRouter = Backbone.Router.extend({
 	$(container).html(JST['htdocs/scripts/templates/status']({ container: container, data: data, project: project }));
     },
     restart_apache: function(container, project) {
-
+	this.please_wait(container);
+	var app = this;
+	$.getJSON('/restart_apache', { project: project }, function(data) {
+	    this.please_wait(container, 'Restarting...');
+	    setTimeout(function() {
+		app.show_status(container, project);
+	    }, 5000);
+	});
     },
     kill_apache: function(container, project, signal) {
-
+	this.please_wait(container);
+	var app = this;
+	$.getJSON('/kill_apache', { signal: signal }, function(data) {
+	    this.please_wait(container, 'Sending ' + signal + ' signal...');
+	    setTimeout(function() {
+		app.show_status(container, project);
+	    }, 5000);
+	});
     },
-    please_wait: function(container) {
-	$(container).html(JST['htdocs/scripts/templates/please_wait']());
+    please_wait: function(container, message) {
+	$(container).html(JST['htdocs/scripts/templates/please_wait']({ message: message }));
     }
 });
