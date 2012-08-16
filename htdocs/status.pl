@@ -4,11 +4,11 @@ sub init {
     my $self = shift;
     my $request = N3->request;
     my $project_name = $request->param('project');
-    my $type = $request->param('type');
-    my $user = $request->param('user');
     my $projects = N3manager::Projects->new;
     my $project = $projects->project($project_name);
     return unless $project;
+    my $user = $project->user;
+    my $type = $project->type;
     my $apache_status = {};
     my $git_status_command = ". '" . $project->project_file . "'; cd $ENV{SRCTOP}/$project_name; git status";
     my $git_status = `$git_status_command`;

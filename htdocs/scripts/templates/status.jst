@@ -1,13 +1,27 @@
+<% var branch; var regex = /branch (.*)\n/gi; var matches = regex.exec(data.git_status); if (matches) { branch = matches[1]; } %>
 <status>
-    <apache>
+    <subsection id=apache>
 	<h3>Apache</h3>
 	<row>
-	    <label>Status</label>
+	    <label>Actions:</label>
+	    <subactions>
+		<ul><!--
+		    --><li><a href='#' onclick='App.restart_apache("<%= container %>", "<%= project %>"); return false;'>(Re)start</a></li><!--
+		    --><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "TERM"); return false;'>Stop (quick)</a></li><!--
+		    --><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "QUIT"); return false;'>Stop (graceful)</a></li><!--
+		    --><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "KILL"); return false;'>Stop (force)</a></li><!--
+		    --><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "USR1"); return false;'>Send USR1</a></li><!--
+		    --><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "USR2"); return false;'>Send USR2</a></li><!--
+		--></ul>
+	    </subactions>
+	</row>
+	<row>
+	    <label>Status:</label>
 	    <content><%= data.apache_status.running ? '<good>Running</good>' : '<bad>Stopped</bad>' %></content>
 	</row>
 	<% if (data.apache_status.running) { %>
 	<row>
-	    <label>Processes</label>
+	    <label class='top'>Processes:</label>
 	    <content>
 		<% var total_rss = 0; %>
 		<% var total_vsz = 0; %>
@@ -29,16 +43,31 @@
 			--></ul>
 		    </process>
 		<% } %>
-		<ul><!--
-		    --><li>Total rss: <%= total_rss %></li><!--
-		    --><li>Total vsz: <%= total_vsz %></li><!--
-		    --><li>Total mem: <%= mem_percent %>%</li><!--
-		    --><li>Total cpu: <%= cpu_percent %>%</li<!--
-		--></ul>
+		<totals>
+		    <ul><!--
+			--><li>Total rss: <%= total_rss %></li><!--
+			--><li>Total vsz: <%= total_vsz %></li><!--
+			--><li>Total mem: <%= mem_percent %>%</li><!--
+			--><li>Total cpu: <%= cpu_percent %>%</li<!--
+		    --></ul>
+		</totals>
 	    </content>
 	</row>
 	<% } %>
-    </apache>
-    <git>
-    </git>
+	<row>
+	    <label>Error Log:</label>
+	    <scrollable><pre><%= data.apache_status.log_tail %></pre></scrollable>
+	</row>
+    </subsection>
+    <subsection id=git>
+	<h3>Git</h3>
+	<row>
+	    <label>Branch:</label>
+	    <%= branch %>
+	</row>
+	<row>
+	    <label>Status:</label>
+	    <scrollable><pre><%= data.git_status %></pre></scrollable>
+	</row>
+    </subsection>
 </status>

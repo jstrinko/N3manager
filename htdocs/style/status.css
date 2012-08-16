@@ -1,0 +1,53 @@
+status {
+    display: block;
+    border-top: 1px solid #666;
+}
+status h3 {
+    font-size: 1.1em;
+    font-weight: normal;
+    margin: 0px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #eee;
+    border-top: 1px solid #eee;
+}
+status row {
+    padding: 3px;
+}
+status row label { 
+    width: 110px;
+    display: inline-block;
+    font-size: 1.05em;
+}
+status row label.top {
+    vertical-align: top;
+}
+status row content {
+    display: inline-block;
+    font-size: .8em;
+}
+status ul {
+    list-style-type: none;
+    margin: 0px;
+    padding-left: 0px;
+}
+status ul li {
+    display: inline-block;
+    margin-right: 8px;
+}
+subactions {
+    font-size: .8em;
+    display: inline-block;
+}
+subactions ul li:nth-child(n+2):before {
+    content: '\b7\a0';
+}
+subactions ul li {
+    margin-right: 4px;
+}
+totals {
+    font-weight: bold;
+}
+status subsection {
+    padding-top: 10px;
+    display: block;
+}

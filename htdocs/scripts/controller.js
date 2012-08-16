@@ -90,15 +90,21 @@ var AppRouter = Backbone.Router.extend({
 	    app.show_file_callback(container, file, data);
 	});
     },
-    show_status: function(container, project, type, user) { 
+    show_status: function(container, project) { 
 	this.please_wait(container);
 	var app = this;
-	$.getJSON('/status', { project: project, type: type, user: user }, function(data) {
-	    app.show_status_callback(container, data);
+	$.getJSON('/status', { project: project }, function(data) {
+	    app.show_status_callback(container, data, project);
 	});
     },
-    show_status_callback: function(container, data) {
-	$(container).html(JST['htdocs/scripts/templates/status']({ container: container, data: data }));
+    show_status_callback: function(container, data, project) {
+	$(container).html(JST['htdocs/scripts/templates/status']({ container: container, data: data, project: project }));
+    },
+    restart_apache: function(container, project) {
+
+    },
+    kill_apache: function(container, project, signal) {
+
     },
     please_wait: function(container) {
 	$(container).html(JST['htdocs/scripts/templates/please_wait']());

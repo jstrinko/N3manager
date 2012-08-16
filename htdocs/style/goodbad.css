@@ -1,0 +1,10 @@
+good {
+    font-weight: bold;
+    color: #393;
+    font-size: 1.4em;
+}
+bad {
+    font-weight: bold;
+    color: #933;
+    font-size: 1.4em;
+}
