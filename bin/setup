@@ -72,7 +72,12 @@ my @parts = (
 	key => 'static_server_hostname',
 	prompt => 'Static server hostname:',
 	default => $default_hostname,
-    }
+    },
+    {
+	key => 'form_directory',
+	prompt => 'Form project directory:',
+	default => ($ENV{SRCTOP} || $ENV{HOME} . '/src/') . '/form',
+    },
 );
 
 my $project = {
@@ -167,6 +172,8 @@ my $static_replacements = {
 };
 
 symlink $project_dir . '/static', $static_root . '/' . $project->{name};
+symlink $project->{form_directory} . '/htdocs/scripts/templates', $project_dir . '/htdocs/scripts/templates/form';
+symlink $project->{form_directory} . '/htdocs/scripts', $project_dir . '/htdocs/scripts/form';
 
 my $static_new_content = N3::Replace::replace_words($static_contents, $static_replacements);
 open(FILE, ">$static_conf_file") or die $!;
@@ -177,7 +184,7 @@ print "Creating project file: $project_file\n";
 open(FILE, ">$project_file") or die $!;
 print FILE <<END;
 export HOME=$ENV{HOME}
-export PERL5LIB=$project_dir:$project->{src_directory}/N3:\$PERL5LIB
+export PERL5LIB=$project_dir:$project->{src_directory}/N3:$project->{form_directory}:\$PERL5LIB
 export PERLLIB=\$PERL5LIB
 export PATH=$project_dir/bin:$project->{src_directory}/N3/bin:$ENV{HOME}/bin:\$PATH
 export LOGTOP=$project->{log_directory}

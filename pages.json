@@ -7,7 +7,8 @@
     { "uri": "/directory", "local": "/directory" },
     { "uri": "/status", "local": "/status" },
     { "uri": "/restart_apache", "local": "/restart_apache" },
-    { "url": "/kill_apache", "local": "/kill_apache" },
+    { "uri": "/kill_apache", "local": "/kill_apache" },
+    { "uri": "/new_project", "local": "/new_project" },
     { 
 	"uri": "/scripts", 
 	"type": "collection", 
@@ -21,7 +22,10 @@
 	    "/scripts/views/*.js",
 	    "/scripts/collections/models/*.js",
 	    "/scripts/collections/*.js",
-	    "/scripts/templates/*.jst"
+	    "/scripts/templates/*.jst",
+	    "/scripts/templates/form/*.jst",
+	    "/scripts/templates/form/fields/*.jst",
+	    "/scripts/form/*.js"
 	]
     },
     {

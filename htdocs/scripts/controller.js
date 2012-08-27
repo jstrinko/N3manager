@@ -9,7 +9,8 @@ function main() {
 var AppRouter = Backbone.Router.extend({
     routes: {
 	"": "showProjects",
-	"about": "about"
+	"about": "about",
+	"new_project": "new_project"
     },
     showProjects: function() {
 	var app = this;
@@ -104,23 +105,29 @@ var AppRouter = Backbone.Router.extend({
 	this.please_wait(container);
 	var app = this;
 	$.getJSON('/restart_apache', { project: project }, function(data) {
-	    this.please_wait(container, 'Restarting...');
-	    setTimeout(function() {
-		app.show_status(container, project);
-	    }, 5000);
+	    app.show_status(container, project);
 	});
     },
     kill_apache: function(container, project, signal) {
 	this.please_wait(container);
 	var app = this;
-	$.getJSON('/kill_apache', { signal: signal }, function(data) {
-	    this.please_wait(container, 'Sending ' + signal + ' signal...');
-	    setTimeout(function() {
-		app.show_status(container, project);
-	    }, 5000);
+	$.getJSON('/kill_apache', { project: project, signal: signal }, function(data) {
+	    app.show_status(container, project);
 	});
     },
     please_wait: function(container, message) {
 	$(container).html(JST['htdocs/scripts/templates/please_wait']({ message: message }));
+    },
+    new_project: function() {
+	this.do_form('/new_project', 'main');
+    },
+    do_form: function(url, container) {
+	this.please_wait(container);
+	var app = this;
+	$.getJSON(url, function(data) {
+	    data.action = data.action ? data.action : url;
+	    data.container = container;
+	    var form = new Form(data);
+	});
     }
 });

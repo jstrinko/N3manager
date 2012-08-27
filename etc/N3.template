@@ -53,3 +53,6 @@ DocumentRoot __SRCTOP__/__PROJECT__/htdocs
 
 PerlRequire __SRCTOP__/N3/N3/Handler.pm
 PerlCleanupHandler N3::Handler::cleanup
+PerlChildInitHandler N3::Handler::child_init
+PerlChildExitHandler N3::Handler::child_exit
+PerlInitHandler N3::Handler::reload_modules

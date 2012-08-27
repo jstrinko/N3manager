@@ -6,8 +6,8 @@
 	    <label>Actions:</label>
 	    <subactions>
 		<ul><!--
-		    --><li><a href='#' onclick='App.restart_apache("<%= container %>", "<%= project %>"); return false;'>(Re)start</a></li><!--
 		    <% if (project != 'N3manager') { %>
+			--><li><a href='#' onclick='App.restart_apache("<%= container %>", "<%= project %>"); return false;'>(Re)start</a></li><!--
 			--><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "TERM"); return false;'>Stop (quick)</a></li><!--
 			--><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "QUIT"); return false;'>Stop (graceful)</a></li><!--
 			--><li><a href='#' onclick='App.kill_apache("<%= container %>", "<%= project %>", "KILL"); return false;'>Stop (force)</a></li><!--
