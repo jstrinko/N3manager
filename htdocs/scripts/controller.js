@@ -127,6 +127,8 @@ var AppRouter = Backbone.Router.extend({
 	$.getJSON(url, function(data) {
 	    data.action = data.action ? data.action : url;
 	    data.container = container;
+	    data.app = app;
+	    data.wait_function = 'please_wait';
 	    var form = new Form(data);
 	});
     }

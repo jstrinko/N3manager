@@ -78,6 +78,10 @@ my @parts = (
 	prompt => 'Form project directory:',
 	default => ($ENV{SRCTOP} || $ENV{HOME} . '/src/') . '/form',
     },
+    {
+	key => 'encryption_key',
+	prompt => 'Encryption key:',
+    },
 );
 
 my $project = {
@@ -196,6 +200,7 @@ export PROJECTS_DIR=$project->{project_file_directory}
 export APACHE_CONF_DIR=$project->{apache_directory}
 export APACHE_BIN=$project->{apache_bin}
 export START_DIR=$ENV{HOME}/bin
+export ENCRYPTION_KEY=$project->{encryption_key}
 END
 close FILE;
 

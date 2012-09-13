@@ -40,6 +40,65 @@ sub project {
     }
 }
 
+sub create_project {
+    my $self = shift;
+    my $data = shift;
+    if ($data->{type} eq 'N3') {
+	my $project_file = "$ENV{PROJECTS_DIR}/N3.$ENV{USER}-$data->{name}.env";
+	my $apache_conf_file = "$ENV{APACHE_CONF_DIR}/N3.$ENV{USER}-$data->{name}.conf";
+	my $apache_pid_file = "$ENV{APACHE_CONF_DIR}/pids/N3.$ENV{USER}-$data->{name}.pid";
+my @dirs = (
+    $ENV{LOGTOP} . '/' . $data->{name},
+    $ENV{SRCTOP} . '/' . $data->{name},
+    $ENV{SRCTOP} . '/' . $data->{name} . '/htdocs',
+    $ENV{SRCTOP} . '/' . $data->{name} . '/' . $data->{name},
+);
+
+foreach my $dir (@dirs) {
+    print "Creating directory: $dir\n";
+    mkpath $dir;
+}
+
+	my $contents = N3::Util::file_contents("$ENV{SRCTOP}/$ENV{PROJECT}/etc/N3.template");
+	my $replacements = {
+	    LOGTOP => $ENV{LOGTOP},
+	    PROJECT => $data->{name},
+	    USER => $ENV{USER},
+	    SRCTOP => $ENV{SRCTOP},
+	    GROUP => $ENV{USER},
+	    SERVER_ROOT => $ENV{APACHE_CONF_DIR},
+	    PID_FILE => $apache_pid_file,
+	    PORT => $data->{port},
+	};
+	my $new_content = N3::Replace::replace_words($contents, $replacements);
+	open(FILE, ">$apache_conf_file") or die $!;
+	print FILE $new_content;
+	close FILE;
+
+	open(FILE, ">$project_file") or die $!;
+	print FILE <<END;
+export HOME=$ENV{HOME}
+export PERL5LIB=$ENV{SRCTOP}/$data->{name}:$ENV{PERL5LIB}:\$PERL5LIB
+export PERLLIB=\$PERL5LIB
+export PATH=$ENV{SRCTOP}/$data->{name}/bin:$ENV{SRCTOP}/N3/bin:$ENV{HOME}/bin:\$PATH
+export LOGTOP=$ENV{LOGTOP}
+export SRCTOP=$ENV{SRCTOP}
+export PROJECT=$data->{name}
+export STATIC_SERVER=$ENV{STATIC_SERVER}
+export ENVIRONMENT_TYPE=dev
+export PROJECTS_DIR=$ENV{PROJECTS_DIR}
+export APACHE_CONF_DIR=$ENV{APACHE_CONF_DIR}
+export APACHE_BIN=$ENV{APACHE_BIN}
+export START_DIR=$ENV{HOME}/bin
+export ENCRYPTION_KEY=$ENV{ENCRYPTION_KEY}
+END
+	close FILE;
+    }
+    else {
+	# do something here
+    }
+}
+
 package N3manager::Project;
 
 use base 'N3::Hashable';

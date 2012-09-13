@@ -36,6 +36,7 @@ PerlPassEnv PROJECTS_DIR
 PerlPassEnv APACHE_CONF_DIR
 PerlPassEnv APACHE_BIN
 PerlPassEnv START_DIR
+PerlPassEnv ENCRYPTION_KEY
 
 <Location />
     SetHandler perl-script
